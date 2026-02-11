@@ -1,16 +1,15 @@
-Die Zeitreihen zu den Wettervariablen sind verfügbar als Aggregationen für vier subdivisions (DE11,DE12,DE13,DE14) von Baden-Würtemberg/ Deutschland.
-Diese subdivisions basieren auf dem NUTS Standard:
-"Nomenclature of Territorial Units for Statistics (NUTS) is a geocode standard for referencing the subdivisions of Germany for statistical purposes" [Quelle: https://en.wikipedia.org/wiki/NUTS_statistical_regions_of_Germany]
+The time series for the weather variables are available as aggregations for four subdivisions (DE11, DE12, DE13, DE14) of Baden-Württemberg/Germany.
+These subdivisions are based on the NUTS standard:
+"Nomenclature of Territorial Units for Statistics (NUTS) is a geocode standard for referencing the subdivisions of Germany for statistical purposes" [Source: https://en.wikipedia.org/wiki/NUTS_statistical_regions_of_Germany]
 
-Regierungsbezirk | Code
------------------+-----
-Stuttgart        | DE11
-Karlsruhe        | DE12
-Freiburg         | DE13
-Tübingen         | DE14
+Administrative District | Code
+-----------------------+-----
+Stuttgart              | DE11
+Karlsruhe              | DE12
+Freiburg               | DE13
+Tübingen               | DE14
+Units of the weather variables:
 
-
-Einheiten der Wettervariablen:
-- Air termperature:             °C
-- Global Horizontal Irradiance: W/m²
-- Wind Speed:                   m/s
+Air temperature:              °C
+Global Horizontal Irradiance: W/m²
+Wind Speed:                   m/s
