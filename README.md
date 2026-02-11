@@ -21,8 +21,8 @@ Stay tuned for the upcoming publication:
 1. Clone the repository:
 
 ```bash
-git clone <https://github.com/KIT-IAI/SHAP4TSFMs>
-cd shap4tsfms
+git clone https://github.com/KIT-IAI/SHAP4TSFMs
+cd SHAP4TSFMs
 ```
 
 2. Install all dependencies using uv:
