@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the following publication."
+title: "Explainable Load Forecasting with Covariate-Informed Time Series Foundation Models"
+type: article
+authors:
+  - family-names: Hertel
+    given-names: Matthias
+  - family-names: Nikoltchovska
+    given-names: Alexandra
+  - family-names: Pütz
+    given-names: Sebastian
+  - family-names: Schäfer
+    given-names: Benjamin
+  - family-names: Mikut
+    given-names: Ralf
+  - family-names: Hagenmeyer
+    given-names: Veit
+year: 2026
+doi: "TODO"
