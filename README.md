@@ -108,18 +108,6 @@ Generate SHAP waterfall plots with exogenous weather overlays (monthly, 4-day pa
 uv run stacked_plot_with_exogenous.py
 ```
 
-## Data
-
-The `data/` directory contains hourly time series for the TransnetBW control area (Baden-Württemberg, Germany), aggregated over four NUTS regions (DE11–DE14):
-
-- `TransnetBW_Total_Load.csv` — electrical load
-- `Air_Temperature_2m.csv` — air temperature (°C)
-- `Global_Horizontal_Irradiance.csv` — solar irradiance (W/m²)
-- `Wind_Speed_10m.csv` / `Wind_Speed_100m.csv` — wind speed (m/s)
-- `Mean_Sea_Level_Pressure.csv` — pressure
-- `Total_Precipitation.csv` — precipitation
-
-
 ## License
 
 This project is licensed under the MIT License — see [LICENSE](LICENSE.MD) for details.
