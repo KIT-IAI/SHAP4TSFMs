@@ -41,20 +41,20 @@ uv sync --all-groups
 
 ## Usage
 
-All scripts are run via `uv run` to use the project's virtual environment.
+All scripts are located in `src/` and run via `uv run` to use the project's virtual environment.
 
 ### Forecasting with Chronos-2
 
-Generate load forecasts using the Chronos-2 foundation model:
+Generate load forecasts using the Chronos-2 foundation model (requires `context_length` argument):
 
 ```bash
-uv run chronos-2-predict.py
+uv run src/chronos-2-predict.py 8.064
 ```
 
 Compute SHAP-based explanations for Chronos-2 forecasts:
 
 ```bash
-uv run chronos-2-subseries.py
+uv run src/chronos-2-subseries.py
 ```
 
 ### Forecasting with TabPFN-TS
@@ -62,19 +62,19 @@ uv run chronos-2-subseries.py
 Run TabPFN-TS multivariate forecasting (requires `context_name` and `context_length` arguments):
 
 ```bash
-uv run tabpfn-predict.py 1_year 8760
+uv run src/tabpfn-predict.py 1_year 8760
 ```
 
 Run TabPFN univariate forecasting:
 
 ```bash
-uv run python tabpfn-predict-univariate.py
+uv run src/tabpfn-predict-univariate.py
 ```
 
 Compute SHAP-based subseries explanations for TabPFN:
 
 ```bash
-uv run tabpfn-ts-subseries.py
+uv run src/tabpfn-ts-subseries.py
 ```
 
 Optional arguments for `tabpfn-ts-subseries.py`:
@@ -89,7 +89,7 @@ Optional arguments for `tabpfn-ts-subseries.py`:
 Generate SHAP feature dependence plots and compute feature importance:
 
 ```bash
-uv run evaluate_explanations.py --model chronos-2
+uv run src/evaluate_explanations.py --model chronos-2
 ```
 
 | Argument  | Default     | Choices                    | Description              |
@@ -99,13 +99,13 @@ uv run evaluate_explanations.py --model chronos-2
 Generate monthly stacked SHAP waterfall plots:
 
 ```bash
-uv run stacked_plot.py
+uv run src/stacked_plot.py
 ```
 
 Generate SHAP waterfall plots with exogenous weather overlays (monthly, 4-day panel, and single-day plots):
 
 ```bash
-uv run stacked_plot_with_exogenous.py
+uv run src/stacked_plot_with_exogenous.py
 ```
 
 ## License

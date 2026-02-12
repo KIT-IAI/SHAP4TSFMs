@@ -2,6 +2,9 @@ import json
 import os
 import platform
 from datetime import datetime, timedelta
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 import numpy as np
 import pandas as pd
@@ -18,15 +21,6 @@ from tabpfn_time_series.features import (
     RunningIndexFeature,
 )
 from tqdm import tqdm
-from workalendar.europe import BadenWurttemberg
-
-os.environ["TABPFN_ALLOW_CPU_LARGE_DATASET"] = "1"
-
-TRANSNET_FEATURES = [
-    ("temperature", "data/Air_Temperature_2m.csv"),
-    ("irradiance", "data/Global_Horizontal_Irradiance.csv"),
-]
-
 
 # Set device based on operating system
 if platform.system() == "Linux":
@@ -42,7 +36,7 @@ print(f"Using device: {DEVICE}")
 def get_transnetbw_df():
     END_DATE = "2025-09-30 23:59:00"
     transnet_load_df = pd.read_csv(
-        "data/TransnetBW_Total_Load.csv", parse_dates=["Timestamp"]
+        PROJECT_ROOT / "data/TransnetBW_Total_Load.csv", parse_dates=["Timestamp"]
     )
     transnet_load_df = pd.DataFrame(
         {
@@ -53,17 +47,7 @@ def get_transnetbw_df():
             .mean(axis=-1),
         }
     )
-    calendar = BadenWurttemberg()
-    transnet_load_df["holiday"] = [
-        1 if (timepoint.dayofweek == 6 or calendar.is_holiday(timepoint)) else 0
-        for timepoint in transnet_load_df["timestamp"]
-    ]
     transnet_load_df = transnet_load_df[transnet_load_df["timestamp"] <= END_DATE]
-    for feature, file in TRANSNET_FEATURES:
-        feature_df = pd.read_csv(
-            file, parse_dates=["Timestamp"], index_col="Timestamp"
-        )[:END_DATE]
-        transnet_load_df[feature] = np.asarray(feature_df)[::4, :4].mean(axis=-1)
     return transnet_load_df
 
 
@@ -119,11 +103,15 @@ class TabPFNEnsemble:
         return (y_pred_z + y_pred_power) / 2
 
 
-def main(context_name: str, context_length: int):
-    # Generate unique run ID to save results
+def main():
+    # Generate unique run ID
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
-    stride = 1
-    os.makedirs("results_tabpfn", exist_ok=True)
+    os.makedirs(PROJECT_ROOT / "results_tabpfn", exist_ok=True)
+
+    # Test different context lengths
+    # 1 week = 168 hours, 2 weeks = 336, 4 weeks = 672, 8 weeks = 1344
+    context_name, context_length = ("1_year", 8760)
+    stride = 1  # 1 hour
     START_DATE = datetime(2024, 10, 1)
     END_DATE = datetime(2025, 9, 30)
 
@@ -143,13 +131,14 @@ def main(context_name: str, context_length: int):
         "prediction_length": prediction_length,
         "device": DEVICE,
     }
-    with open(f"results_tabpfn/{run_id}_config.json", "w") as f:
+    with open(PROJECT_ROOT / f"results_tabpfn/{run_id}_config.json", "w") as f:
         json.dump(config, f, indent=2)
 
     transnet_df = get_transnetbw_df()
     print(transnet_df)
 
-    # Calculate number of predictions based on stride
+    results = {}
+
     total_hours = ((END_DATE - START_DATE).days + 1) * 24 - prediction_length + 1
     n_predictions = total_hours // stride
     print(f"Total predictions to make: {n_predictions}\n")
@@ -160,6 +149,7 @@ def main(context_name: str, context_length: int):
 
     all_predictions = []
     all_ground_truths = []
+    first_prediction_timestamps = None
 
     # Create feature transformer once (reuse across all predictions)
     feature_transformer = FeatureTransformer(
@@ -243,6 +233,9 @@ def main(context_name: str, context_length: int):
         # Fit and predict using ensemble
         pipeline.fit(X_tr, y_tr)
         predictions = pipeline.predict(X_te)
+        # Store timestamps for the first prediction
+        if pred_i == 0:
+            first_prediction_timestamps = energy_future_df[timestamp_column].values
 
         all_predictions.append(predictions)
         all_ground_truths.append(ground_truth)
@@ -267,7 +260,18 @@ def main(context_name: str, context_length: int):
         f"{context_name}: {len(all_predictions)} predictions | MAE: {mae:.2f} | RMSE: {rmse:.2f} | MAPE: {mape:.2f}%"
     )
 
-    # Print summary
+    results[context_name] = {
+        "context_length": context_length,
+        "n_predictions": len(all_predictions),
+        "mae": mae,
+        "rmse": rmse,
+        "mape": mape,
+        "predictions": all_predictions[0],  # Store first prediction for plotting
+        "ground_truth": all_ground_truths[0],
+        "timestamps": first_prediction_timestamps,
+    }
+
+    # Print summary of all results
     print(f"\n{'=' * 80}")
     print("SUMMARY OF RESULTS - TABPFN-TS")
     print(f"{'=' * 80}")
@@ -281,36 +285,39 @@ def main(context_name: str, context_length: int):
         f"{'Context':<15} {'Length':<10} {'N_Pred':<10} {'MAE':<12} {'RMSE':<12} {'MAPE':<12}"
     )
     print("-" * 80)
-    print(
-        f"{context_name:<15} "
-        f"{context_length:<10} "
-        f"{len(all_predictions):<10} "
-        f"{mae:<12.2f} "
-        f"{rmse:<12.2f} "
-        f"{mape:<12.2f}%"
-    )
+    for context_name, result_data in results.items():
+        print(
+            f"{context_name:<15} "
+            f"{result_data['context_length']:<10} "
+            f"{result_data['n_predictions']:<10} "
+            f"{result_data['mae']:<12.2f} "
+            f"{result_data['rmse']:<12.2f} "
+            f"{result_data['mape']:<12.2f}%"
+        )
     print("=" * 80)
 
-    # Create results DataFrame
+    # Create a detailed results DataFrame
     results_df = pd.DataFrame(
         [
             {
                 "Context": context_name,
-                "Context_Length": context_length,
-                "N_Predictions": len(all_predictions),
-                "MAE": mae,
-                "RMSE": rmse,
-                "MAPE": mape,
+                "Context_Length": result_data["context_length"],
+                "N_Predictions": result_data["n_predictions"],
+                "MAE": result_data["mae"],
+                "RMSE": result_data["rmse"],
+                "MAPE": result_data["mape"],
             }
+            for context_name, result_data in results.items()
         ]
     )
 
     # Save results to CSV with run_id
     results_df.to_csv(
-        f"results_tabpfn/stride{stride}/{run_id}_results.csv", index=False
+        PROJECT_ROOT / f"results_tabpfn/stride{stride}/{run_id}_results_univariate.csv", index=False
     )
-    print(f"\nResults saved to 'results_tabpfn/stride{stride}/{run_id}_results.csv'")
-
+    print(
+        f"\nResults saved to 'results_tabpfn/stride{stride}/{run_id}_results_univariate.csv'"
+    )
     print(f"\nAll results saved with ID: {run_id}")
 
 

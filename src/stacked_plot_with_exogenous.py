@@ -1,5 +1,8 @@
 import pickle
 from datetime import datetime, timedelta
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
@@ -36,15 +39,15 @@ FEATURE_DISPLAY_NAMES = {
 }
 
 TRANSNET_FEATURES = [
-    ("temperature", "data/Air_Temperature_2m.csv"),
-    ("irradiance", "data/Global_Horizontal_Irradiance.csv"),
+    ("temperature", PROJECT_ROOT / "data/Air_Temperature_2m.csv"),
+    ("irradiance", PROJECT_ROOT / "data/Global_Horizontal_Irradiance.csv"),
 ]
 
 
 def get_transnetbw_df():
     END_DATE = "2025-09-30 23:59:00"
     transnet_load_df = pd.read_csv(
-        "data/TransnetBW_Total_Load.csv", parse_dates=["Timestamp"]
+        PROJECT_ROOT / "data/TransnetBW_Total_Load.csv", parse_dates=["Timestamp"]
     )
     transnet_load_df = pd.DataFrame(
         {
@@ -415,7 +418,7 @@ if __name__ == "__main__":
     models = ["chronos-2", "tabpfn-ts"]
     for model in models:
         print(model)
-        EXPLANATIONS_FILE = f"{model}_subseries_explanations.pkl"
+        EXPLANATIONS_FILE = PROJECT_ROOT / f"{model}_subseries_explanations.pkl"
         START_DATE = datetime(2024, 10, 1)
 
         with open(EXPLANATIONS_FILE, "rb") as f:
@@ -472,7 +475,7 @@ if __name__ == "__main__":
                 "figsize": (18, 22),
                 "plots": monthly_plots,
             },
-            f"plots/{model}_monthly_shaps.pdf",
+            PROJECT_ROOT / f"plots/{model}_monthly_shaps.pdf",
         )
 
         # 4-day panel plots
@@ -544,7 +547,7 @@ if __name__ == "__main__":
                 "plots": panel_plots,
                 "legend_fontsize": 14,
             },
-            f"plots/{model}_4days_panel.pdf",
+            PROJECT_ROOT / f"plots/{model}_4days_panel.pdf",
         )
 
         # Plot for Figure 1
@@ -616,7 +619,7 @@ if __name__ == "__main__":
             fontsize=9,
         )
         plt.tight_layout()
-        plt.savefig(f"plots/{model}_one_day.pdf", bbox_inches="tight")
+        plt.savefig(PROJECT_ROOT / f"plots/{model}_one_day.pdf", bbox_inches="tight")
         plt.close()
         # One day plot end
 

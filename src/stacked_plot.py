@@ -1,6 +1,9 @@
 import pickle
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Dict
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,7 +11,7 @@ import pandas as pd
 
 
 def get_xkcd_colors():
-    with open("xkcd_colors.txt") as f:
+    with open(PROJECT_ROOT / "xkcd_colors.txt") as f:
         lines = f.readlines()
     colors = [l.strip().split("\t")[1] for l in lines[1:] if len(l) > 0]
     return colors[::-1]
@@ -66,7 +69,7 @@ def waterfall_plot(
 
 if __name__ == "__main__":
     # EXPLANATIONS_FILE = "chronos-2_subseries_explanations.pkl"
-    EXPLANATIONS_FILE = "tabpfn-ts_subseries_explanations.pkl"
+    EXPLANATIONS_FILE = PROJECT_ROOT / "tabpfn-ts_subseries_explanations.pkl"
     START_DATE = datetime(2024, 10, 1)
 
     with open(EXPLANATIONS_FILE, "rb") as f:
@@ -98,7 +101,7 @@ if __name__ == "__main__":
         month_gt = ground_truth[start_index:end_index]
         start_date = START_DATE + timedelta(hours=start_index)
         waterfall_plot(month_shaps, month_pred, month_gt, start_date, ax=axs[i])
-    plt.savefig("plots/monthly_shaps.pdf", bbox_inches="tight")
+    plt.savefig(PROJECT_ROOT / "plots/monthly_shaps.pdf", bbox_inches="tight")
     # plt.show()
 
     ft_importance = {ft: np.sum(np.abs(shap_values[ft])) for ft in features}

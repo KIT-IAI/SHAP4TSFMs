@@ -1,7 +1,10 @@
 import argparse
 import pickle
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Dict, List
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -102,9 +105,9 @@ def scatter(
     plt.colorbar(label=clabel)
     plt.tight_layout()
     if save_label is not None:
-        plt.savefig(f"plots/{model}_{save_label}.pdf", bbox_inches="tight")
+        plt.savefig(PROJECT_ROOT / f"plots/{model}_{save_label}.pdf", bbox_inches="tight")
     else:
-        plt.savefig(f"plots/{model}_{xlabel}.pdf", bbox_inches="tight")
+        plt.savefig(PROJECT_ROOT / f"plots/{model}_{xlabel}.pdf", bbox_inches="tight")
     plt.show()
 
 
@@ -127,7 +130,7 @@ if __name__ == "__main__":
     all_expls = {}
 
     for model_name in MODELS:
-        filename = f"{model_name}_subseries_explanations.pkl"
+        filename = PROJECT_ROOT / f"{model_name}_subseries_explanations.pkl"
         with open(filename, "rb") as f:
             all_expls[model_name] = pickle.load(f)
 
@@ -241,7 +244,7 @@ if __name__ == "__main__":
     plt.ylim(feature_limits["holiday"])
     plt.colorbar(label="Hour of day")
     plt.tight_layout()
-    plt.savefig(f"plots/{model}_{feature}.pdf")
+    plt.savefig(PROJECT_ROOT / f"plots/{model}_{feature}.pdf")
     plt.show()
 
     # feature dependence plots

@@ -4,6 +4,9 @@ import platform
 import time
 from datetime import datetime, timedelta
 from math import factorial
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 import numpy as np
 import pandas as pd
@@ -26,8 +29,8 @@ from workalendar.europe import BadenWurttemberg
 os.environ["TABPFN_ALLOW_CPU_LARGE_DATASET"] = "1"
 
 TRANSNET_FEATURES = [
-    ("temperature", "data/Air_Temperature_2m.csv"),
-    ("irradiance", "data/Global_Horizontal_Irradiance.csv"),
+    ("temperature", PROJECT_ROOT / "data/Air_Temperature_2m.csv"),
+    ("irradiance", PROJECT_ROOT / "data/Global_Horizontal_Irradiance.csv"),
 ]
 
 WINDOW_CONFIGS = {
@@ -83,7 +86,7 @@ def powerset(s):
 def get_transnetbw_df():
     END_DATE = "2025-09-30 23:59:00"
     transnet_load_df = pd.read_csv(
-        "data/TransnetBW_Total_Load.csv", parse_dates=["Timestamp"]
+        PROJECT_ROOT / "data/TransnetBW_Total_Load.csv", parse_dates=["Timestamp"]
     )
     transnet_load_df = pd.DataFrame(
         {
@@ -184,7 +187,7 @@ def main(
     WINDOW_NAMES = config["names"]
 
     explanations_base = (
-        f"results_tabpfn/explanations_parallel/{CONTEXT_LENGTH}/tabpfn_explanations"
+        PROJECT_ROOT / f"results_tabpfn/explanations_parallel/{CONTEXT_LENGTH}/tabpfn_explanations"
     )
     print(f"{explanations_base}.pkl")
     assert np.sum(WINDOW_LENGTHS) == CONTEXT_LENGTH

@@ -2,6 +2,9 @@ import os
 import pickle
 from datetime import datetime, timedelta
 from math import factorial
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 import numpy as np
 import pandas as pd
@@ -31,15 +34,15 @@ def powerset(s):
 
 
 TRANSNET_FEATURES = [
-    ("temperature", "data/Air_Temperature_2m.csv"),
-    ("irradiance", "data/Global_Horizontal_Irradiance.csv"),
+    ("temperature", PROJECT_ROOT / "data/Air_Temperature_2m.csv"),
+    ("irradiance", PROJECT_ROOT / "data/Global_Horizontal_Irradiance.csv"),
 ]
 
 
 def get_transnetbw_df():
     END_DATE = "2025-09-30 23:59:00"
     transnet_load_df = pd.read_csv(
-        "data/TransnetBW_Total_Load.csv", parse_dates=["Timestamp"]
+        PROJECT_ROOT / "data/TransnetBW_Total_Load.csv", parse_dates=["Timestamp"]
     )
     transnet_load_df = pd.DataFrame(
         {
@@ -66,7 +69,7 @@ def get_transnetbw_df():
 
 if __name__ == "__main__":
     PIPELINE_FILE = "pipeline.pkl"
-    EXPLANATIONS_FILE = "chronos-2_subseries_explanations.pkl"
+    EXPLANATIONS_FILE = PROJECT_ROOT / "chronos-2_subseries_explanations.pkl"
 
     N_VARIABLES = 4
     CONTEXT_LENGTH = 168 * 48

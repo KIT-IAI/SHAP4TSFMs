@@ -1,10 +1,13 @@
 import os
 import pickle
-import sys
 from datetime import datetime, timedelta
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 import numpy as np
 import pandas as pd
+import torch
 from chronos import BaseChronosPipeline, Chronos2Pipeline
 from tqdm import tqdm
 from workalendar.europe import BadenWurttemberg
@@ -15,8 +18,14 @@ def load_pipeline(file):
         with open(file, "rb") as f:
             pipeline: Chronos2Pipeline = pickle.load(f)
     else:
+        if torch.cuda.is_available():
+            device = "cuda"
+        elif torch.backends.mps.is_available():
+            device = "mps"
+        else:
+            device = "cpu"
         pipeline: Chronos2Pipeline = BaseChronosPipeline.from_pretrained(
-            "s3://autogluon/chronos-2/", device_map="cuda"
+            "s3://autogluon/chronos-2/", device_map=device
         )
         with open(file, "wb") as f:
             pickle.dump(pipeline, f)
@@ -24,15 +33,15 @@ def load_pipeline(file):
 
 
 TRANSNET_FEATURES = [
-    ("temperature", "data/Air_Temperature_2m.csv"),
-    ("irradiance", "data/Global_Horizontal_Irradiance.csv"),
+    ("temperature", PROJECT_ROOT / "data/Air_Temperature_2m.csv"),
+    ("irradiance", PROJECT_ROOT / "data/Global_Horizontal_Irradiance.csv"),
 ]
 
 
 def get_transnetbw_df():
     END_DATE = "2025-09-30 23:59:00"
     transnet_load_df = pd.read_csv(
-        "data/TransnetBW_Total_Load.csv", parse_dates=["Timestamp"]
+        PROJECT_ROOT / "data/TransnetBW_Total_Load.csv", parse_dates=["Timestamp"]
     )
     transnet_load_df = pd.DataFrame(
         {
@@ -57,8 +66,7 @@ def get_transnetbw_df():
     return transnet_load_df
 
 
-if __name__ == "__main__":
-    CONTEXT_LENGTH = int(sys.argv[1])
+def main(context_length: int):
     PIPELINE_FILE = "pipeline.pkl"
 
     N_VARIABLES = 4
@@ -89,7 +97,7 @@ if __name__ == "__main__":
         start_date = START_DATE + timedelta(hours=pred_i * STRIDE)
 
         energy_context_df = transnet_df[transnet_df[timestamp_column] < start_date]
-        energy_context_df = energy_context_df[-CONTEXT_LENGTH:]
+        energy_context_df = energy_context_df[-context_length:]
         energy_future_df = transnet_df[transnet_df[timestamp_column] >= start_date]
         energy_future_df = energy_future_df[:prediction_length]
         ground_truth = np.array(energy_future_df[target])
@@ -122,3 +130,9 @@ if __name__ == "__main__":
     print("mse:", mse)
     print("rmse:", rmse)
     print("mape:", mape)
+
+
+if __name__ == "__main__":
+    import typer
+
+    typer.run(main)

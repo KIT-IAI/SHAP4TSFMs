@@ -3,6 +3,10 @@
 
 *.pkl
 
+# ignore plots
+plots/*
+results_tabpfn/*
+
 ### Linux ###
 *~
 
