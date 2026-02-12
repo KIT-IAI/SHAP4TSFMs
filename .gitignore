@@ -2,7 +2,6 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,macos,vs,pycharm,windows,linux
 
 *.pkl
-*.csv
 
 ### Linux ###
 *~
