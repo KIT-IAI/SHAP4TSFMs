@@ -6,7 +6,8 @@ Stay tuned for the upcoming publication:
 
 > Matthias Hertel, Alexandra Nikoltchovska, Sebastian Pütz, Benjamin Schäfer, Ralf Mikut, Veit Hagenmeyer.
 > *Explainable Load Forecasting with Covariate-Informed Time Series Foundation Models.*
-> Under Review (2026).
+> In: Proceedings of the 17th ACM International Conference on Future and Sustainable Energy Systems (e-Energy '26). ACM, 2026.
+> DOI: [10.1145/3744255.3811724](https://doi.org/10.1145/3744255.3811724) — Preprint: [arXiv:2512.20514](https://doi.org/10.48550/arXiv.2512.20514)
 
 ## Installation
 
@@ -110,4 +111,6 @@ uv run src/stacked_plot_with_exogenous.py
 
 ## License
 
-This project is licensed under the MIT License — see [LICENSE](LICENSE.MD) for details.
+The code in this project is licensed under the MIT License — see [LICENSE](LICENSE.MD) for details.
+
+For data sources and their respective licensing terms (Copernicus ERA5, ENTSO-E load data), see [data/README.md](data/README.md).
