@@ -29,7 +29,7 @@ Units:
 https://cds.climate.copernicus.eu
 
 **License:** Copernicus Licence Agreement
-https://cds.climate.copernicus.eu/api/v2/terms/static/licence-to-use-copernicus-products.pdf
+https://climate.copernicus.eu/sites/default/files/2025-04/licence-to-use-copernicus-products.pdf 
 
 **Required attribution:**
 > Contains modified Copernicus Climate Change Service information [2024]. Neither the European Commission nor ECMWF is responsible for any use that may be made of the Copernicus information or data it contains.
