@@ -16,4 +16,12 @@ authors:
   - family-names: Hagenmeyer
     given-names: Veit
 year: 2026
-doi: "TODO"
+doi: "10.1145/3744255.3811724"
+identifiers:
+  - type: doi
+    value: "10.1145/3744255.3811724"
+    description: "ACM proceedings"
+  - type: doi
+    value: "10.48550/arXiv.2512.20514"
+    description: "arXiv preprint"
+url: "https://arxiv.org/abs/2512.20514"
